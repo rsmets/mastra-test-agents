@@ -1,7 +1,7 @@
 import { Composio } from "@composio/core";
 import { MastraProvider } from "@composio/mastra";
 
-class ComposioGithubManager {
+export class ComposioGithubManager {
   private composio: Composio<MastraProvider>;
   private userId: string;
 
@@ -27,9 +27,7 @@ class ComposioGithubManager {
     });
 
     if (authConfigs.items.length === 0) {
-      console.warn(
-        "No GitHub auth configs found. Create one at https://app.composio.dev"
-      );
+      console.warn("No GitHub auth configs found. Create one at https://app.composio.dev");
       return null;
     }
 
@@ -49,23 +47,19 @@ class ComposioGithubManager {
   private async establishConnection(authConfigId: string): Promise<boolean> {
     try {
       console.log("Initiating GitHub connection...");
-
+      
       const connectionRequest = await this.composio.connectedAccounts.initiate(
         this.userId,
         authConfigId
       );
 
-      console.log(
-        `Visit this URL to authenticate: ${connectionRequest.redirectUrl}`
-      );
-
+      console.log(`Visit this URL to authenticate: ${connectionRequest.redirectUrl}`);
+      
       await connectionRequest.waitForConnection(60);
       console.log("GitHub connection successful!");
       return true;
     } catch (error) {
-      console.warn(
-        "GitHub connection failed. Continuing without GitHub tools."
-      );
+      console.warn("GitHub connection failed. Continuing without GitHub tools.");
       return false;
     }
   }
@@ -81,10 +75,8 @@ class ComposioGithubManager {
         return {};
       }
 
-      const existingConnection = await this.checkExistingConnection(
-        authConfig.id
-      );
-
+      const existingConnection = await this.checkExistingConnection(authConfig.id);
+      
       if (!existingConnection) {
         const connected = await this.establishConnection(authConfig.id);
         if (!connected) {
