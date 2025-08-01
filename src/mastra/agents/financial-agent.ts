@@ -39,6 +39,16 @@ TOOLS
   model: openai("gpt-4o"), // You can use "gpt-3.5-turbo" if you prefer
   tools: { getTransactionsTool }, // Add our tool here
   memory: new Memory({
+    options: {
+      // ref: https://mastra.ai/en/docs/memory/overview#thread-title-generation
+      threads: {
+        generateTitle: {
+          model: openai("gpt-4.1-nano"), // Use cheaper model for titles
+          instructions:
+            "Generate a concise title for this conversation based on the first user message.",
+        },
+      },
+    },
     storage: new LibSQLStore({
       url: "file:../../memory.db", // local file-system database. Location is relative to the output directory `.mastra/output`
     }),
