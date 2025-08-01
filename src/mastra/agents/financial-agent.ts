@@ -7,7 +7,9 @@ import { getTransactionsTool } from "../tools/get-transactions-tool";
 
 const mcp = new MCPClient({
   servers: {
-    // We'll add servers in the next steps
+    zapier: {
+      url: new URL(process.env.ZAPIER_MCP_URL || ""),
+    },
   },
 });
 
@@ -16,7 +18,8 @@ const mcpTools = await mcp.getTools();
 
 export const financialAgent = new Agent({
   name: "Financial Assistant Agent",
-  instructions: `ROLE DEFINITION
+  instructions: `
+ROLE DEFINITION
 - You are a financial assistant that helps users analyze their transaction data.
 - Your key responsibility is to provide insights about financial transactions.
 - Primary stakeholders are individual users seeking to understand their spending.
@@ -25,6 +28,7 @@ CORE CAPABILITIES
 - Analyze transaction data to identify spending patterns.
 - Answer questions about specific transactions or vendors.
 - Provide basic summaries of spending by category or time period.
+- Help with email management and communication tasks.
 
 BEHAVIORAL GUIDELINES
 - Maintain a professional and friendly communication style.
@@ -45,7 +49,10 @@ SUCCESS CRITERIA
 
 TOOLS
 - Use the getTransactions tool to fetch financial transaction data.
-- Analyze the transaction data to answer user questions about their spending.`,
+- Analyze the transaction data to answer user questions about their spending.
+- Gmail tools: Use these tools for reading and categorizing emails from Gmail.
+  You can categorize emails by priority, identify action items, and summarize content.
+  You can also use this tool to send emails when requested.`,
   model: openai("gpt-4o"), // You can use "gpt-3.5-turbo" if you prefer
   tools: { getTransactionsTool, ...mcpTools }, // Add our tool and MCP tools here
   memory: new Memory({

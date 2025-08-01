@@ -6,6 +6,9 @@
         "-y",
         "@mastra/mcp-docs-server"
       ]
+    },
+    "zapier": {
+      "url": "https://mcp.zapier.com/api/mcp/s/MDA0ZjhjYmYtMzFkZi00ZGNjLWJlOGItMTdjNmJlZmQzNGNmOmIzNDFhNDhlLWQyYzYtNGNkNS04YWRkLTBkOTY4ZTM2YjIzZA==/mcp"
     }
   }
 }
