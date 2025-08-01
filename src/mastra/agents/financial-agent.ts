@@ -8,11 +8,28 @@ import { MastraProvider } from "@composio/mastra";
 import { getTransactionsTool } from "../tools/get-transactions-tool";
 import { ComposioGithubManager } from "../composio/github";
 
+import { createSmitheryUrl } from "@smithery/sdk";
+
+const serverUrl = createSmitheryUrl(
+  "https://server.smithery.ai/@smithery-ai/github",
+  {
+    apiKey: process.env.SMITHERY_API_KEY,
+    profile: process.env.SMITHERY_PROFILE,
+  }
+);
+
 // MCP Setup
 const mcp = new MCPClient({
   servers: {
     zapier: {
       url: new URL(process.env.ZAPIER_MCP_URL || ""),
+    },
+    github: {
+      url: serverUrl,
+    },
+    hackernews: {
+      command: "npx",
+      args: ["-y", "@devabdultech/hn-mcp-server"],
     },
   },
 });
@@ -64,7 +81,7 @@ TOOLS
   You can check pull requests, issues, and view commit history.
 `,
   model: openai("gpt-4o"),
-  tools: { getTransactionsTool, ...mcpTools, ...composioGithubTools },
+  tools: { getTransactionsTool, ...mcpTools },
   memory: new Memory({
     options: {
       threads: {

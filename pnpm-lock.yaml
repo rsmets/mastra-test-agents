@@ -32,6 +32,9 @@ importers:
       '@mastra/memory':
         specifier: ^0.12.0
         version: 0.12.0(@mastra/core@0.12.1(openapi-types@12.1.3)(react@19.1.1)(zod@3.25.76))(react@19.1.1)
+      '@smithery/sdk':
+        specifier: ^1.5.5
+        version: 1.5.5(react@19.1.1)(ws@8.18.3)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -83,6 +86,9 @@ packages:
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
+
+  '@anthropic-ai/sdk@0.32.1':
+    resolution: {integrity: sha512-U9JwTrDvdQ9iWuABVsMLj8nJVwAyQz6QXvgLsVhryhCEPkLsbcP/MXxm+jYcAwLoV8ESbaTTjnD4kuAFa+Hyjg==}
 
   '@apidevtools/json-schema-ref-parser@11.9.3':
     resolution: {integrity: sha512-60vepv88RwcJtSHrD6MjIL6Ta3SOYbgfnkHb+ppAVK+o9mXprRtulx7VlRl3lN3bbvysAfCS7WMVfhUYemB0IQ==}
@@ -1220,6 +1226,9 @@ packages:
     resolution: {integrity: sha512-doH1gimEu3A46VX6aVxpHTeHrytJAG6HgdxntYnCFiIFHEM/ZGpG8KiZGBChchjQmG0XFIBL552kBTjVcMZXwQ==}
     engines: {node: '>=12'}
 
+  '@smithery/sdk@1.5.5':
+    resolution: {integrity: sha512-xLHjCBs2kp2OElyqN0Q+UkCcQzhMOyui87H+NqYOuz8mGQL3VocxqDZesWIGySUg490p5XNlowQHlicR9RJyXA==}
+
   '@types/aws-lambda@8.10.150':
     resolution: {integrity: sha512-AX+AbjH/rH5ezX1fbK8onC/a+HyQHo7QGmvoxAE42n22OsciAxvZoZNEr22tbXs8WfP1nIsBjKDpgPm3HjOZbA==}
 
@@ -2211,6 +2220,9 @@ packages:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
     engines: {node: '>= 0.4'}
 
+  okay-error@1.0.3:
+    resolution: {integrity: sha512-1GZkj84Uw2STYhwcGhEkgvNXkremOEmTwSgufKm9CcprjwKFuF6md5f1CIvWJgtYlyfR6BbZYnjr6HCfhUuCpQ==}
+
   on-exit-leak-free@2.1.2:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
     engines: {node: '>=14.0.0'}
@@ -2906,6 +2918,18 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
+
+  '@anthropic-ai/sdk@0.32.1':
+    dependencies:
+      '@types/node': 18.19.121
+      '@types/node-fetch': 2.6.13
+      abort-controller: 3.0.0
+      agentkeepalive: 4.6.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
 
   '@apidevtools/json-schema-ref-parser@11.9.3':
     dependencies:
@@ -4293,6 +4317,25 @@ snapshots:
     dependencies:
       escape-string-regexp: 5.0.0
 
+  '@smithery/sdk@1.5.5(react@19.1.1)(ws@8.18.3)':
+    dependencies:
+      '@anthropic-ai/sdk': 0.32.1
+      '@modelcontextprotocol/sdk': 1.17.1
+      ai: 4.3.19(react@19.1.1)(zod@3.25.76)
+      express: 5.1.0
+      json-schema: 0.4.0
+      lodash: 4.17.21
+      okay-error: 1.0.3
+      openai: 4.104.0(ws@8.18.3)(zod@3.25.76)
+      uuid: 11.1.0
+      zod: 3.25.76
+      zod-to-json-schema: 3.24.6(zod@3.25.76)
+    transitivePeerDependencies:
+      - encoding
+      - react
+      - supports-color
+      - ws
+
   '@types/aws-lambda@8.10.150': {}
 
   '@types/bunyan@1.8.11':
@@ -5278,6 +5321,8 @@ snapshots:
   object-assign@4.1.1: {}
 
   object-inspect@1.13.4: {}
+
+  okay-error@1.0.3: {}
 
   on-exit-leak-free@2.1.2: {}
 
