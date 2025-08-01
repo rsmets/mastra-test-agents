@@ -3,8 +3,12 @@ import { openai } from "@ai-sdk/openai";
 import { Memory } from "@mastra/memory";
 import { LibSQLStore } from "@mastra/libsql";
 import { MCPClient } from "@mastra/mcp";
+import { Composio } from "@composio/core";
+import { MastraProvider } from "@composio/mastra";
 import { getTransactionsTool } from "../tools/get-transactions-tool";
+import { ComposioGithubManager } from "../composio/github";
 
+// MCP Setup
 const mcp = new MCPClient({
   servers: {
     zapier: {
@@ -13,9 +17,12 @@ const mcp = new MCPClient({
   },
 });
 
-// Initialize MCP tools
+// Initialize tools
 const mcpTools = await mcp.getTools();
+const composioGithubManager = new ComposioGithubManager();
+const composioGithubTools = await composioGithubManager.initialize();
 
+// 8. Pass tools to your agent
 export const financialAgent = new Agent({
   name: "Financial Assistant Agent",
   instructions: `
@@ -52,22 +59,24 @@ TOOLS
 - Analyze the transaction data to answer user questions about their spending.
 - Gmail tools: Use these tools for reading and categorizing emails from Gmail.
   You can categorize emails by priority, identify action items, and summarize content.
-  You can also use this tool to send emails when requested.`,
-  model: openai("gpt-4o"), // You can use "gpt-3.5-turbo" if you prefer
-  tools: { getTransactionsTool, ...mcpTools }, // Add our tool and MCP tools here
+  You can also use this tool to send emails when requested.
+- GitHub tools: Use these tools to monitor and interact with GitHub repositories.
+  You can check pull requests, issues, and view commit history.
+`,
+  model: openai("gpt-4o"),
+  tools: { getTransactionsTool, ...mcpTools, ...composioGithubTools },
   memory: new Memory({
     options: {
-      // ref: https://mastra.ai/en/docs/memory/overview#thread-title-generation
       threads: {
         generateTitle: {
-          model: openai("gpt-4.1-nano"), // Use cheaper model for titles
+          model: openai("gpt-4.1-nano"),
           instructions:
             "Generate a concise title for this conversation based on the first user message.",
         },
       },
     },
     storage: new LibSQLStore({
-      url: "file:../../memory.db", // local file-system database. Location is relative to the output directory `.mastra/output`
+      url: "file:../../memory.db",
     }),
-  }), // Add memory here
+  }),
 });
