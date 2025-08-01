@@ -1,7 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
 import { Memory } from "@mastra/memory";
-import { LibSQLStore } from "@mastra/libsql";
+import { LibSQLStore, LibSQLVector } from "@mastra/libsql";
 import { MCPClient } from "@mastra/mcp";
 import { Composio } from "@composio/core";
 import { MastraProvider } from "@composio/mastra";
@@ -47,7 +47,49 @@ const mcpTools = await mcp.getTools();
 const composioGithubManager = new ComposioGithubManager();
 const composioGithubTools = await composioGithubManager.initialize();
 
-// 8. Pass tools to your agent
+// Enhanced Memory Configuration
+const memory = new Memory({
+  storage: new LibSQLStore({
+    url: "file:../../memory.db",
+  }),
+  vector: new LibSQLVector({
+    connectionUrl: "file:../../memory.db",
+  }),
+  embedder: openai.embedding("text-embedding-3-small"),
+  options: {
+    // Keep last 20 messages in context
+    lastMessages: 20,
+    // Enable semantic search to find relevant past conversations
+    semanticRecall: {
+      topK: 3,
+      messageRange: {
+        before: 2,
+        after: 1,
+      },
+    },
+    // Enable working memory to remember user information
+    workingMemory: {
+      enabled: true,
+      template: `
+      <user>
+         <first_name></first_name>
+         <username></username>
+         <preferences></preferences>
+         <interests></interests>
+         <conversation_style></conversation_style>
+       </user>`,
+    },
+    threads: {
+      generateTitle: {
+        model: openai("gpt-4.1-nano"),
+        instructions:
+          "Generate a concise title for this conversation based on the first user message.",
+      },
+    },
+  },
+});
+
+// Agent Configuration
 export const financialAgent = new Agent({
   name: "Financial Assistant Agent",
   instructions: `ROLE DEFINITION
@@ -72,7 +114,14 @@ BEHAVIORAL GUIDELINES
 - Ensure user privacy and data security.
 - When creating files, use clear, descriptive names.
 - Organize files in a logical directory structure.
-- Include timestamps in filenames when relevant (e.g., "monthly_report_2025_08.md").
+- Include timestamps in filenames when relevant.
+- Remember user preferences and past interactions to provide personalized service.
+
+MEMORY CAPABILITIES
+- You can remember details about users across conversations.
+- Store and recall user preferences, interests, and conversation style.
+- Reference past interactions to provide contextually relevant responses.
+- Use semantic search to find relevant information from previous conversations.
 
 CONSTRAINTS & BOUNDARIES
 - Do not provide financial investment advice.
@@ -85,6 +134,7 @@ SUCCESS CRITERIA
 - Achieve high user satisfaction through clear and helpful responses.
 - Maintain user trust by ensuring data privacy and security.
 - Keep files organized and easily accessible for future reference.
+- Provide personalized experiences based on user history and preferences.
 
 TOOLS
 - Use the getTransactions tool to fetch financial transaction data.
@@ -105,7 +155,7 @@ HACKER NEWS TOOLS
 - Stay informed about tech news and industry trends.
 
 FILESYSTEM TOOLS
-- You also have filesystem read/write access to a notes directory. 
+- You have filesystem read/write access to a notes directory.
 - You can use that to store info for later use or organize info for the user.
 - You can use this notes directory to keep track of to-do list items for the user.
 - Notes dir: ${path.join(process.cwd(), "notes")}
@@ -117,18 +167,5 @@ FILESYSTEM TOOLS
 `,
   model: openai("gpt-4o"),
   tools: { getTransactionsTool, ...mcpTools },
-  memory: new Memory({
-    options: {
-      threads: {
-        generateTitle: {
-          model: openai("gpt-4.1-nano"),
-          instructions:
-            "Generate a concise title for this conversation based on the first user message.",
-        },
-      },
-    },
-    storage: new LibSQLStore({
-      url: "file:../../memory.db",
-    }),
-  }),
+  memory,
 });
