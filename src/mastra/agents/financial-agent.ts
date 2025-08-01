@@ -79,6 +79,9 @@ TOOLS
   You can also use this tool to send emails when requested.
 - GitHub tools: Use these tools to monitor and interact with GitHub repositories.
   You can check pull requests, issues, and view commit history.
+- Hacker News tools: Use these tools to search for stories on Hacker News.
+  You can get top stories, search for specific topics, and retrieve comments for stories.
+  Use this to help users stay informed about tech news and industry trends.
 `,
   model: openai("gpt-4o"),
   tools: { getTransactionsTool, ...mcpTools },
