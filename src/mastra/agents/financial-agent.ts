@@ -2,7 +2,17 @@ import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
 import { Memory } from "@mastra/memory";
 import { LibSQLStore } from "@mastra/libsql";
+import { MCPClient } from "@mastra/mcp";
 import { getTransactionsTool } from "../tools/get-transactions-tool";
+
+const mcp = new MCPClient({
+  servers: {
+    // We'll add servers in the next steps
+  },
+});
+
+// Initialize MCP tools
+const mcpTools = await mcp.getTools();
 
 export const financialAgent = new Agent({
   name: "Financial Assistant Agent",
@@ -37,7 +47,7 @@ TOOLS
 - Use the getTransactions tool to fetch financial transaction data.
 - Analyze the transaction data to answer user questions about their spending.`,
   model: openai("gpt-4o"), // You can use "gpt-3.5-turbo" if you prefer
-  tools: { getTransactionsTool }, // Add our tool here
+  tools: { getTransactionsTool, ...mcpTools }, // Add our tool and MCP tools here
   memory: new Memory({
     options: {
       // ref: https://mastra.ai/en/docs/memory/overview#thread-title-generation
