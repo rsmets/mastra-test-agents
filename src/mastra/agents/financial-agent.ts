@@ -66,6 +66,7 @@ const memory = new Memory({
         before: 2,
         after: 1,
       },
+      scope: "resource", // Search across all threads for this user
     },
     // Enable working memory to remember user information
     workingMemory: {
