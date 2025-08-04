@@ -71,6 +71,7 @@ const memory = new Memory({
     // Enable working memory to remember user information
     workingMemory: {
       enabled: true,
+      scope: "resource", // Memory persists across all user threads
       template: `
       <user>
          <first_name></first_name>
