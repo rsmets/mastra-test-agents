@@ -1,15 +1,17 @@
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
-import { LibSQLStore, LibSQLVector } from "@mastra/libsql";
+import { PostgresStore, PgVector } from "@mastra/pg";
 import { openai } from "@ai-sdk/openai";
 
-// Create a basic memory instance
+// Create a basic memory instance with PostgreSQL for persistent storage
 const memory = new Memory({
-  storage: new LibSQLStore({
-    url: "file:../../memory.db", // relative path from the `.mastra/output` directory
+  storage: new PostgresStore({
+    connectionString:
+      process.env.DATABASE_URL || "postgresql://localhost:5432/mastra_memory",
   }),
-  vector: new LibSQLVector({
-    connectionUrl: "file:../../memory.db",
+  vector: new PgVector({
+    connectionString:
+      process.env.DATABASE_URL || "postgresql://localhost:5432/mastra_memory",
   }),
   embedder: openai.embedding("text-embedding-3-small"),
   options: {

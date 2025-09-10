@@ -1,6 +1,7 @@
 import { Mastra } from "@mastra/core/mastra";
 import { PinoLogger } from "@mastra/loggers";
 import { LibSQLStore } from "@mastra/libsql";
+import { VercelDeployer } from "@mastra/deployer-vercel";
 import { weatherWorkflow } from "./workflows/weather-workflow";
 import { weatherAgent } from "./agents/weather-agent";
 import { financialAgent } from "./agents/financial-agent";
@@ -16,12 +17,17 @@ export const mastra = new Mastra({
     memoryAgent,
     travelAgent,
   },
-  storage: new LibSQLStore({
-    // stores telemetry, evals, ... into memory storage, if it needs to persist, change to file:../mastra.db
-    url: ":memory:",
-  }),
+  // Removed LibSQLStore for serverless compatibility
+  // Use in-memory storage or external database for production
   logger: new PinoLogger({
     name: "Mastra",
     level: "info",
+  }),
+  // Add Vercel deployer for easy deployment
+  deployer: new VercelDeployer({
+    projectName: "mastra-course",
+    env: {
+      NODE_ENV: "production",
+    },
   }),
 });
