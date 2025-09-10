@@ -1,7 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
 import { Memory } from "@mastra/memory";
-import { LibSQLStore, LibSQLVector } from "@mastra/libsql";
+import { PostgresStore, PgVector } from "@mastra/pg";
 import { MCPClient } from "@mastra/mcp";
 import { Composio } from "@composio/core";
 import { MastraProvider } from "@composio/mastra";
@@ -47,13 +47,15 @@ const mcpTools = await mcp.getTools();
 const composioGithubManager = new ComposioGithubManager();
 const composioGithubTools = await composioGithubManager.initialize();
 
-// Enhanced Memory Configuration
+// Enhanced Memory Configuration with PostgreSQL for persistent storage
 const memory = new Memory({
-  storage: new LibSQLStore({
-    url: "file:../../memory.db",
+  storage: new PostgresStore({
+    connectionString:
+      process.env.DATABASE_URL || "postgresql://localhost:5432/mastra_memory",
   }),
-  vector: new LibSQLVector({
-    connectionUrl: "file:../../memory.db",
+  vector: new PgVector({
+    connectionString:
+      process.env.DATABASE_URL || "postgresql://localhost:5432/mastra_memory",
   }),
   embedder: openai.embedding("text-embedding-3-small"),
   options: {
