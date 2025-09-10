@@ -22,17 +22,23 @@ const serverUrl = createSmitheryUrl(
   }
 );
 
-// MCP Setup
-const mcp = new MCPClient({
-  servers: {
-    zapier: {
-      url: new URL(process.env.ZAPIER_MCP_URL || ""),
-    },
-    hackernews: {
-      command: "npx",
-      args: ["-y", "@devabdultech/hn-mcp-server"],
-    },
+// MCP Setup - conditionally include Zapier only if URL is provided
+const mcpServers: any = {
+  hackernews: {
+    command: "npx",
+    args: ["-y", "@devabdultech/hn-mcp-server"],
   },
+};
+
+// Only add Zapier server if ZAPIER_MCP_URL is provided and not empty
+if (process.env.ZAPIER_MCP_URL && process.env.ZAPIER_MCP_URL.trim() !== "") {
+  mcpServers.zapier = {
+    url: new URL(process.env.ZAPIER_MCP_URL),
+  };
+}
+
+const mcp = new MCPClient({
+  servers: mcpServers,
 });
 
 const mcpTools = await mcp.getTools();

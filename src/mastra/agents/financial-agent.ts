@@ -19,27 +19,33 @@ const serverUrl = createSmitheryUrl(
   }
 );
 
-// MCP Setup
-const mcp = new MCPClient({
-  servers: {
-    zapier: {
-      url: new URL(process.env.ZAPIER_MCP_URL || ""),
-    },
-    github: {
-      url: serverUrl,
-    },
-    hackernews: {
-      command: "npx",
-      args: ["-y", "@devabdultech/hn-mcp-server"],
-    },
-    textEditor: {
-      command: "pnpx",
-      args: [
-        `@modelcontextprotocol/server-filesystem`,
-        path.join(process.cwd(), "..", "..", "notes"), // relative to output directory
-      ],
-    },
+// MCP Setup - conditionally include Zapier only if URL is provided
+const mcpServers: any = {
+  github: {
+    url: serverUrl,
   },
+  hackernews: {
+    command: "npx",
+    args: ["-y", "@devabdultech/hn-mcp-server"],
+  },
+  textEditor: {
+    command: "pnpx",
+    args: [
+      `@modelcontextprotocol/server-filesystem`,
+      path.join(process.cwd(), "..", "..", "notes"), // relative to output directory
+    ],
+  },
+};
+
+// Only add Zapier server if ZAPIER_MCP_URL is provided and not empty
+if (process.env.ZAPIER_MCP_URL && process.env.ZAPIER_MCP_URL.trim() !== "") {
+  mcpServers.zapier = {
+    url: new URL(process.env.ZAPIER_MCP_URL),
+  };
+}
+
+const mcp = new MCPClient({
+  servers: mcpServers,
 });
 
 // Initialize tools
